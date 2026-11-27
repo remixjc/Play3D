@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0b0e16">
+    <meta name="description" content="折光是一款可以独立部署的 3D 打砖块游戏。">
+    <title>折光 · Prism Break</title>
+  </head>
+  <body>
+    <div class="shell">
+      <header class="site-header">
+        <div class="brand">
+          <i class="brand-mark" aria-hidden="true"></i>
+          <span>折光</span>
+        </div>
+        <div class="header-actions">
+          <button class="quiet-button" id="sound-button" type="button" aria-pressed="false">
+            <span class="music-note" aria-hidden="true">♫</span> 音效
+          </button>
+          <button class="quiet-button settings-trigger" id="settings-button" type="button">
+            <span aria-hidden="true">⚙</span> 设置
+          </button>
+          <button class="quiet-button" id="help-button" type="button">
+            <span class="question-mark" aria-hidden="true">?</span> 玩法
+          </button>
+        </div>
+      </header>
+
+      <main class="layout">
+        <div class="intro">
+          <p class="genre"><span aria-hidden="true"></span> 3D 打砖块</p>
+          <h1 aria-label="Prism Break"><span>PRISM</span><span>BREAK</span></h1>
+          <p class="tagline">操控挡板接住弹球，击碎棱镜阵列。</p>
+        </div>
+
+        <section class="game" aria-label="3D 打砖块球场">
+          <header class="scoreboard">
+            <div class="stat">
+              <span class="label">当前分数</span>
+              <output id="score">00000</output>
+            </div>
+            <div class="stat">
+              <span class="label">关卡</span>
+              <output><span id="level">01</span><small> / 03</small></output>
+            </div>
+            <div class="stat lives-stat">
+              <span class="label">剩余球数</span>
+              <div class="lives-value">
+                <span id="lives-icons" aria-hidden="true"><i></i><i></i><i></i></span>
+                <output id="lives">3</output>
+              </div>
+            </div>
+          </header>
+          <div class="arena" id="arena" tabindex="0" aria-label="球场。方向键移动挡板，倒计时后自动发球。">
+            <div class="screen-grid" aria-hidden="true"></div>
+            <div class="combo" id="combo" aria-hidden="true"></div>
+            <div id="countdown" class="countdown" aria-hidden="true" hidden>
+              <div class="countdown-ring"><span id="countdown-digit">3</span></div>
+              <span class="countdown-label">即将发球</span>
+            </div>
+            <div class="result" id="result" hidden>
+              <div class="result-card">
+                <h2 id="result-title"></h2>
+                <p id="result-description"></p>
+                <button id="result-button" class="primary-button" type="button"></button>
+              </div>
+            </div>
+          </div>
+          <div class="game-footer">
+            <span class="game-status" id="status" data-state="menu" role="status">待开局</span>
+            <div class="progress-group">
+              <span id="stage-name">初光</span>
+              <progress id="level-progress" value="0" max="1" aria-label="已击碎砖块"></progress>
+              <output id="progress-count" aria-hidden="true">0 / 0</output>
+            </div>
+          </div>
+        </section>
+
+        <div class="play-controls">
+          <div class="play-actions">
+            <button class="primary-button" type="button" id="primary">
+              <span class="play-icon" aria-hidden="true"></span><span id="primary-label">开始游戏</span>
+            </button>
+            <button class="quiet-button restart" id="restart" type="button" title="重新开始" aria-label="重新开始" hidden>↻</button>
+          </div>
+          <div class="best-score">
+            <div class="best-icon" aria-hidden="true"><span></span></div>
+            <div>
+              <p class="label">本机最高分</p>
+              <output id="best">00000</output>
+            </div>
+          </div>
+          <section class="quick-items" aria-label="对局道具">
+            <div class="quick-title">
+              <span class="label">对局道具</span>
+              <button class="text-button" id="shop-shortcut" type="button">领取与兑换 <span aria-hidden="true">↗</span></button>
+            </div>
+            <div class="quick-row" id="quick-items"></div>
+            <span id="item-feedback" class="sr-only" role="status"></span>
+          </section>
+        </div>
+
+        <footer class="controls-guide" aria-label="操作提示">
+          <span class="keyboard-guide"><kbd>←</kbd><kbd>→</kbd> 移动挡板</span>
+          <span class="keyboard-guide"><kbd>Space</kbd> 提前发球</span>
+          <span class="keyboard-guide"><kbd>Esc</kbd> 暂停</span>
+          <span class="mouse-guide"><i class="mouse-icon" aria-hidden="true"></i> 鼠标移动控制挡板</span>
+          <span class="touch-guide"><i class="touch-icon" aria-hidden="true">↔</i> 在球场内左右拖动挡板</span>
+        </footer>
+      </main>
+    </div>
+
+    <dialog id="help-dialog" aria-labelledby="help-title">
+      <form method="dialog" class="help-content">
+        <button class="quiet-button close-dialog" aria-label="关闭玩法说明" autofocus>×</button>
+        <h2 id="help-title">怎么玩</h2>
+        <p>左右移动挡板，把弹球打回去。清空砖块进入下一关，漏接三次后本局结束。</p>
+        <dl>
+          <div><dt>移动</dt><dd>方向键、鼠标移动，或在球场触屏拖动</dd></div>
+          <div><dt>发球</dt><dd>3 秒后自动发球，也可按空格或点按「立即发球」</dd></div>
+          <div><dt>暂停</dt><dd><kbd>Esc</kbd>，或点按「暂停游戏」</dd></div>
+          <div><dt>连击</dt><dd>球在两次碰挡板之间击碎多块砖时，连击加分</dd></div>
+          <div><dt>道具</dt><dd>在设置领取积分和兑换道具。对局中点按道具或按 1、2、3 使用</dd></div>
+        </dl>
+        <button class="primary-button">返回球场</button>
+      </form>
+    </dialog>
+    <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
+      <div class="settings-content">
+        <form method="dialog" class="settings-close">
+          <button class="quiet-button close-dialog" aria-label="关闭设置" autofocus>×</button>
+        </form>
+        <h2 id="settings-title">设置</h2>
+        <div class="wallet">
+          <div>
+            <p class="label">可用积分</p>
+            <span class="points" id="wallet-points">0</span>
+          </div>
+          <button class="primary-button claim-button" id="claim-points" type="button">领取 120 积分</button>
+        </div>
+        <p class="wallet-rule">每日可领取一次。每击碎一块砖，另得 2 积分。</p>
+        <h3>兑换道具</h3>
+        <div class="shop-list" id="shop-items"></div>
+        <p class="shop-feedback" id="shop-feedback" role="status"></p>
+      </div>
+    </dialog>
+    <template id="quick-template">
+      <button class="quick-item" type="button" disabled>
+        <span class="item-icon" aria-hidden="true"></span>
+        <span class="item-name"></span>
+        <span class="item-state"></span>
+        <kbd aria-hidden="true"></kbd>
+      </button>
+    </template>
+    <template id="shop-template">
+      <div class="shop-item">
+        <span class="item-icon" aria-hidden="true"></span>
+        <div class="shop-info">
+          <div class="shop-name"><strong></strong><span class="shop-stock"></span></div>
+          <p class="item-description"></p>
+        </div>
+        <button class="quiet-button redeem-button" type="button"></button>
+      </div>
+    </template>
+    <noscript><p class="no-script">请启用 JavaScript 来运行折光。</p></noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
